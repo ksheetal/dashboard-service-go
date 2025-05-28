@@ -26,5 +26,12 @@ func (h *DashboardHandler) RegisterRoutes(e *echo.Echo) {
 
 func (h *DashboardHandler) fetchDashboardMetrics(c echo.Context) error {
 
-	return c.JSON(http.StatusOK, nil)
+	var filters []string
+	results, err := h.dashboardService.FetchMetrics(c.Request(), filters)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, results)
 }

@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"dashboard-service/internal/api"
+	"dashboard-service/internal/domain"
 	"dashboard-service/internal/platform"
 	"dashboard-service/internal/platform/config"
 	"fmt"
@@ -12,6 +14,8 @@ import (
 func main() {
 	app := fx.New(
 		fx.Module("platform", platform.PlatformModule()),
+		fx.Module("domain", domain.DomainModule()),
+		fx.Module("api", api.ApiModule()),
 		fx.Invoke(applicationLifeCycle),
 	)
 	app.Run()
