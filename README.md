@@ -102,3 +102,15 @@ To run a specific test function:
 go test -v ./internal/domain/dashboard -run TestCalculate
 ```
 
+### Output
+
+```aiignore
+2000-01: expected revenue: $0.00, expected total capacity of the unreserved offices: 266
+2018-01: expected revenue: $75500.00, expected total capacity of the unreserved offices: 137
+2013-01: expected revenue: $8100.00, expected total capacity of the unreserved offices: 254
+2013-06: expected revenue: $15150.00, expected total capacity of the unreserved offices: 241
+2014-03: expected revenue: $37214.52, expected total capacity of the unreserved offices: 203
+2014-09: expected revenue: $86700.00, expected total capacity of the unreserved offices: 120
+2015-07: expected revenue: $76225.81, expected total capacity of the unreserved offices: 135
+
+```
