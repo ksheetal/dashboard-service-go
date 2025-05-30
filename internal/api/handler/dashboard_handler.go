@@ -8,10 +8,10 @@ import (
 
 // DashboardHandler handles HTTP requests for todos
 type DashboardHandler struct {
-	dashboardService dashboard.DashboardService
+	dashboardService dashboard.ReservationService
 }
 
-func NewDashboardHandler(dashboardService dashboard.DashboardService) *DashboardHandler {
+func NewDashboardHandler(dashboardService dashboard.ReservationService) *DashboardHandler {
 	return &DashboardHandler{
 		dashboardService: dashboardService,
 	}
@@ -26,12 +26,6 @@ func (h *DashboardHandler) RegisterRoutes(e *echo.Echo) {
 
 func (h *DashboardHandler) fetchDashboardMetrics(c echo.Context) error {
 
-	var filters []string
-	results, err := h.dashboardService.FetchMetrics(c.Request(), filters)
-
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
-
+	results := []string{"hello"}
 	return c.JSON(http.StatusOK, results)
 }

@@ -1,26 +1,69 @@
 package dashboard
 
-import "net/http"
+import "time"
 
-type DashboardServiceImpl struct {
-	repo Repository
+type ReservationService struct {
 }
 
-func NewDashboardService(repo Repository) *DashboardServiceImpl {
-	return &DashboardServiceImpl{
-		repo: repo,
-	}
+func NewReservation() *ReservationService {
+	return &ReservationService{}
 }
 
-func (s *DashboardServiceImpl) FetchMetrics(request *http.Request, filters []string) (*Metrics, error) {
+func (s *ReservationService) Calculate(reservations []OfficeReservation, period Period) (float64, int) {
 
-	data := &Metrics{
-		MonthlyRevenue: map[string]RevenueOffice{
-			"2025-01": {MonthlyRevenue: 15000.75, UnreservedOffice: 5},
-			"2025-02": {MonthlyRevenue: 17200.00, UnreservedOffice: 3},
-			"2025-03": {MonthlyRevenue: 19850.25, UnreservedOffice: 2},
-		},
+	revenue := 0.0
+	totalReserved := make([]bool, len(reservations))
+
+	for i, r := range reservations {
+		start := r.StartDate
+		end := r.EndDate
+		monthStart := period.FirstDay()
+		monthEnd := period.LastDay()
+
+		// Determine overlap
+		effectiveEnd := monthEnd
+		if end != nil && end.Before(monthEnd) {
+			effectiveEnd = *end
+		}
+
+		if start.After(monthEnd) || (end != nil && end.Before(monthStart)) {
+			continue // No overlap
+		}
+		// Calculate prorated days
+		overlapStart := maxDate(start, monthStart)
+		overlapEnd := minDate(effectiveEnd, monthEnd)
+
+		daysInMonth := monthEnd.Day()
+		reservedDays := int(overlapEnd.Sub(overlapStart).Hours()/24) + 1
+
+		if reservedDays > 0 {
+			proratedRevenue := (r.MonthlyPrice / float64(daysInMonth)) * float64(reservedDays)
+			revenue += proratedRevenue
+			totalReserved[i] = true
+		}
 	}
 
-	return data, nil
+	unreservedCapacity := 0
+	for i, r := range reservations {
+		if !totalReserved[i] {
+			unreservedCapacity += r.Capacity
+		}
+	}
+
+	return revenue, unreservedCapacity
+
+}
+
+func minDate(a, b time.Time) time.Time {
+	if a.Before(b) {
+		return a
+	}
+	return b
+}
+
+func maxDate(a, b time.Time) time.Time {
+	if a.After(b) {
+		return a
+	}
+	return b
 }

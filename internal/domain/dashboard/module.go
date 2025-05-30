@@ -6,6 +6,6 @@ import (
 
 var DomainModule = fx.Options(
 	fx.Provide(
-		NewDashboardService,
+		NewReservation,
 	),
 )
